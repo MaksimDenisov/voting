@@ -1,0 +1,6 @@
+spring:
+    application:
+        name: TaskManager
+    jpa:
+        hibernate:
+            ddl-auto: create-drop

@@ -1,0 +1,12 @@
+base-url: ""
+
+spring:
+  application:
+    name: voting
+
+  jpa:
+    properties:
+      hibernate:
+        enable_lazy_load_no_trans: true
+        ddl-auto: create-drop
+    show-sql: true
