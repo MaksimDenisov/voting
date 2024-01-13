@@ -16,7 +16,7 @@ import ru.denisovmaksim.voting.config.SpringConfigForIT;
 import ru.denisovmaksim.voting.dto.UserCreationDTO;
 import ru.denisovmaksim.voting.model.User;
 import ru.denisovmaksim.voting.repository.UserRepository;
-import ru.denisovmaksim.voting.utils.TestUtils;
+import ru.denisovmaksim.voting.utils.JsonUtils;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -26,10 +26,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static ru.denisovmaksim.voting.utils.TestUtils.ADMIN;
-import static ru.denisovmaksim.voting.utils.TestUtils.ADMIN_BASIC_AUTH;
-import static ru.denisovmaksim.voting.utils.TestUtils.USER;
-import static ru.denisovmaksim.voting.utils.TestUtils.USER_BASIC_AUTH;
+import static ru.denisovmaksim.voting.utils.TestData.ADMIN;
+import static ru.denisovmaksim.voting.utils.TestData.ADMIN_BASIC_AUTH;
+import static ru.denisovmaksim.voting.utils.TestData.USER;
+import static ru.denisovmaksim.voting.utils.TestData.USER_BASIC_AUTH;
 
 @AutoConfigureMockMvc
 @ActiveProfiles(SpringConfigForIT.TEST_PROFILE)
@@ -61,7 +61,7 @@ class UserControllerTest {
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse();
-        final User actual = TestUtils.fromJson(response.getContentAsString(), new TypeReference<>() {
+        final User actual = JsonUtils.fromJson(response.getContentAsString(), new TypeReference<>() {
         });
 
         final User expected = userRepository.findByEmail(USER.getEmail()).orElseThrow();
@@ -78,7 +78,7 @@ class UserControllerTest {
                 .getResponse();
 
         final User expected = userRepository.findByEmail(ADMIN.getEmail()).orElseThrow();
-        final User actual = TestUtils.fromJson(response.getContentAsString(), new TypeReference<>() {
+        final User actual = JsonUtils.fromJson(response.getContentAsString(), new TypeReference<>() {
         });
         assertEquals(expected.getEmail(), actual.getEmail());
     }
@@ -88,7 +88,7 @@ class UserControllerTest {
     void createUser() throws Exception {
         UserCreationDTO newUser = new UserCreationDTO("new-user@mail.com", "new_user_pass");
         mockMvc.perform(post(baseUrl + UserController.SIGNUP)
-                .content(TestUtils.asJson(newUser))
+                .content(JsonUtils.asJson(newUser))
                 .contentType(APPLICATION_JSON))
                 .andExpect(status().isCreated())
                 .andExpect(header().string("Location", containsString("/profile")))
@@ -102,7 +102,7 @@ class UserControllerTest {
     @DisplayName("Create duplicated  user should return bad request.")
     void createDuplicatedUser() throws Exception {
         mockMvc.perform(post(baseUrl + UserController.SIGNUP)
-                .content(TestUtils.asJson(new UserCreationDTO(USER.getEmail(), USER.getPassword())))
+                .content(JsonUtils.asJson(new UserCreationDTO(USER.getEmail(), USER.getPassword())))
                 .contentType(APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andReturn()
@@ -113,8 +113,6 @@ class UserControllerTest {
     @DisplayName("Unauthorized user should return 401")
     void getProfileByUnauthorizedUser() throws Exception {
         mockMvc.perform(get(UserController.PROFILE))
-                .andExpect(status().isUnauthorized())
-                .andReturn()
-                .getResponse();
+                .andExpect(status().isUnauthorized());
     }
 }

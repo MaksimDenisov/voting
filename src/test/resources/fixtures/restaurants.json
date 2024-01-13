@@ -1,0 +1,14 @@
+[
+  {
+    "id" : 1,
+    "name": "First restaurant"
+  },
+  {
+    "id" : 2,
+    "name": "Second restaurant"
+  },
+  {
+    "id" : 3,
+    "name": "Third restaurant"
+  }
+]
