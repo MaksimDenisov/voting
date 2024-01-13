@@ -1,0 +1,22 @@
+[
+  {
+    "id": 9,
+    "name": "Butteriest Black Pepper Fish",
+    "price": 30000
+  },
+  {
+    "id": 10,
+    "name": "Smoked Salmon Tartare",
+    "price": 50000
+  },
+  {
+    "id": 11,
+    "name": "Spicy Salmon Roll Bowl",
+    "price": 25000
+  },
+  {
+    "id": 12,
+    "name": "Stuffing-Crusted Fish",
+    "price": 12000
+  }
+]

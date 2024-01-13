@@ -1,0 +1,17 @@
+[
+  {
+    "restaurantId": 1,
+    "name": "Meat restaurant",
+    "countOfVotes" : 3
+  },
+  {
+    "restaurantId": 2,
+    "name": "Vegan restaurant",
+    "countOfVotes" : 1
+  },
+  {
+    "restaurantId": 3,
+    "name": "Fish restaurant",
+    "countOfVotes" : 2
+  }
+]

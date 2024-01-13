@@ -1,0 +1,65 @@
+[
+  {
+    "restaurantId": 1,
+    "name": "Meat restaurant",
+    "dishes": [
+      {
+        "id": 1,
+        "name": "Salt-and-Pepper Steak",
+        "price": 50000
+      },
+      {
+        "id": 2,
+        "name": "Pork Shoulder Cutlets",
+        "price": 25000
+      },
+      {
+        "id": 3,
+        "name": "Chicken Schnitzel",
+        "price": 15000
+      },
+      {
+        "id": 4,
+        "name": "Grilled Sliced Brisket",
+        "price": 30000
+      }
+    ]
+  },
+  {
+    "restaurantId": 2,
+    "name": "Vegan restaurant",
+    "dishes": [
+      {
+        "id": 5,
+        "name": "Sesame Noodles",
+        "price": 15000
+      },
+      {
+        "id": 6,
+        "name": "Gingery Spring Soup",
+        "price": 25000
+      },
+      {
+        "id": 7,
+        "name": "Tomato and Charred Pepper Farro Salad",
+        "price": 15000
+      }
+    ]
+  },
+  {
+    "restaurantId": 3,
+    "name": "Fish restaurant",
+    "dishes": [
+      {
+        "id": 10,
+        "name": "Smoked Salmon Tartare",
+        "price": 50000
+      },
+      {
+        "id": 11,
+        "name": "Spicy Salmon Roll Bowl",
+        "price": 25000
+      }
+    ]
+  }
+]

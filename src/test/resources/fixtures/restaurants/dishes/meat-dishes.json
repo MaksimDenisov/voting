@@ -1,0 +1,22 @@
+[
+  {
+    "id": 1,
+    "name": "Salt-and-Pepper Steak",
+    "price": 50000
+  },
+  {
+    "id": 2,
+    "name": "Pork Shoulder Cutlets",
+    "price": 25000
+  },
+  {
+    "id": 3,
+    "name": "Chicken Schnitzel",
+    "price": 15000
+  },
+  {
+    "id": 4,
+    "name": "Grilled Sliced Brisket",
+    "price": 30000
+  }
+]
