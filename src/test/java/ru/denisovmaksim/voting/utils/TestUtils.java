@@ -4,50 +4,24 @@ package ru.denisovmaksim.voting.utils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.web.servlet.request.RequestPostProcessor;
+import ru.denisovmaksim.voting.model.Role;
+import ru.denisovmaksim.voting.model.User;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.httpBasic;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@Component
 public class TestUtils {
-
     private static final ObjectMapper MAPPER = new ObjectMapper().findAndRegisterModules();
+    private static final String ADMIN_PASS = "admin";
+    private static final String USER_PASS = "user";
+    public static final User ADMIN = new User(1L, "admin@mail.com",
+            new BCryptPasswordEncoder().encode(ADMIN_PASS), Role.ADMIN);
+    public static final User USER = new User(2L, "user@mail.com",
+            new BCryptPasswordEncoder().encode(USER_PASS), Role.USER);
 
-    @Autowired
-    private MockMvc mockMvc;
-
-    public RequestPostProcessor getUser() {
-        return httpBasic("user@mail.com", "user");
-    }
-
-    public RequestPostProcessor getAdmin() {
-        return httpBasic("admin@mail.com", "admin");
-    }
-
-    public ResultActions perform(final MockHttpServletRequestBuilder request) throws Exception {
-        return mockMvc.perform(request);
-    }
-/*
-
-    public ResultActions performByUser(final MockHttpServletRequestBuilder request, final String byUser)
-            throws Exception {
-        final String token = jwtHelper.expiring(Map.of("username", byUser));
-        request.header(AUTHORIZATION, token);
-        return perform(request);
-    }
-*/
-
-    public void checkNotAuthorizedRequestIsForbidden(final MockHttpServletRequestBuilder request) throws Exception {
-        perform(request).andExpect(status().isForbidden())
-                .andReturn()
-                .getResponse();
-    }
+    public static final RequestPostProcessor ADMIN_BASIC_AUTH =  httpBasic(ADMIN.getEmail(), ADMIN_PASS);
+    public static final RequestPostProcessor USER_BASIC_AUTH =  httpBasic(USER.getEmail(), USER_PASS);
 
     public static String asJson(final Object object) throws JsonProcessingException {
         return MAPPER.writeValueAsString(object);
