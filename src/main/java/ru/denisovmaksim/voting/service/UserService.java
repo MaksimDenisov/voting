@@ -3,6 +3,8 @@ package ru.denisovmaksim.voting.service;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import ru.denisovmaksim.voting.dto.UserCreationDTO;
+import ru.denisovmaksim.voting.model.Role;
 import ru.denisovmaksim.voting.model.User;
 import ru.denisovmaksim.voting.repository.UserRepository;
 
@@ -30,5 +32,9 @@ public class UserService implements org.springframework.security.core.userdetail
                 user.getPassword(),
                 List.of(user.getRole())
         );
+    }
+
+    public User create(UserCreationDTO userCreationDTO) {
+        return repository.save(new User(null, userCreationDTO.getEmail(), userCreationDTO.getPassword(), Role.USER));
     }
 }

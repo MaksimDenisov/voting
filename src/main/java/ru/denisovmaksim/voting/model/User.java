@@ -1,6 +1,5 @@
 package ru.denisovmaksim.voting.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -22,7 +21,6 @@ import static jakarta.persistence.GenerationType.IDENTITY;
 public class User {
     @Id
     @GeneratedValue(strategy = IDENTITY)
-    @JsonIgnore
     private Long id;
 
     @Email
@@ -30,7 +28,6 @@ public class User {
     private String email;
 
     @NotBlank
-    @JsonIgnore
     private String password;
 
     private Role role;
