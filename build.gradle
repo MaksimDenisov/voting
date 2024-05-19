@@ -1,6 +1,7 @@
 plugins {
     id 'java'
     id 'checkstyle'
+    id 'jacoco'
     id 'org.springframework.boot' version '3.2.1'
     id 'io.spring.dependency-management' version '1.1.4'
 }
@@ -20,7 +21,7 @@ dependencies {
     compileOnly 'org.projectlombok:lombok:1.18.26'
 
     annotationProcessor(
-            'org.projectlombok:lombok:1.18.26',
+            'org.projectlombok:lombok:1.18.30',
     )
 
     implementation 'org.springframework.boot:spring-boot-starter-web'
@@ -35,6 +36,13 @@ dependencies {
             'com.h2database:h2:2.1.214',
             'org.postgresql:postgresql:42.6.0'
     )
+}
+
+jacocoTestReport {
+    dependsOn test // tests are required to run before generating the report
+    reports {
+        xml.required = true
+    }
 }
 
 tasks.named('test') {
