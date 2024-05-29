@@ -7,17 +7,16 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.test.context.support.WithAnonymousUser;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
-import ru.denisovmaksim.voting.config.SpringConfigForIT;
 import ru.denisovmaksim.voting.dto.RestaurantTO;
 import ru.denisovmaksim.voting.model.Restaurant;
 import ru.denisovmaksim.voting.repository.RestaurantsRepository;
-import ru.denisovmaksim.voting.repository.UserRepository;
 import ru.denisovmaksim.voting.utils.JsonUtils;
 import ru.denisovmaksim.voting.utils.TestData;
 
@@ -36,31 +35,21 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static ru.denisovmaksim.voting.rest.RestaurantsController.ID;
 import static ru.denisovmaksim.voting.rest.RestaurantsController.RESTAURANTS;
 import static ru.denisovmaksim.voting.utils.JsonUtils.fromJson;
-import static ru.denisovmaksim.voting.utils.TestData.ADMIN;
-import static ru.denisovmaksim.voting.utils.TestData.ADMIN_BASIC_AUTH;
-import static ru.denisovmaksim.voting.utils.TestData.USER;
-import static ru.denisovmaksim.voting.utils.TestData.USER_BASIC_AUTH;
 
 @AutoConfigureMockMvc
-@ActiveProfiles(SpringConfigForIT.TEST_PROFILE)
+@ActiveProfiles("test")
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(classes = SpringConfigForIT.class)
+@SpringBootTest()
 public class RestaurantsControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
 
     @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
     private RestaurantsRepository repository;
 
     @BeforeEach
     public void setUp() throws IOException {
-        userRepository.deleteAll();
-        userRepository.save(ADMIN);
-        userRepository.save(USER);
         repository.saveAll(TestData.getRestaurants());
     }
 
@@ -71,9 +60,9 @@ public class RestaurantsControllerTest {
 
     @Test
     @DisplayName("Get all restaurants available for authorized users.")
+    @WithMockUser
     public void testGetAll() throws Exception {
-        final var response = mockMvc.perform(get(RESTAURANTS)
-                        .with(USER_BASIC_AUTH))
+        final var response = mockMvc.perform(get(RESTAURANTS))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse();
@@ -90,6 +79,7 @@ public class RestaurantsControllerTest {
 
     @Test
     @DisplayName("Get all for unauthorized user should return 401.")
+    @WithAnonymousUser
     public void testGetAllByUnauthorized() throws Exception {
         mockMvc.perform(get(RESTAURANTS))
                 .andExpect(status().isUnauthorized());
@@ -97,11 +87,11 @@ public class RestaurantsControllerTest {
 
     @Test
     @DisplayName("Get one restaurant available for authorized users.")
+    @WithMockUser
     public void testGetOne() throws Exception {
         final Restaurant expected = repository.findAll().get(0);
         final var response = mockMvc.perform(
-                        get(RESTAURANTS + ID, expected.getId())
-                                .with(USER_BASIC_AUTH))
+                        get(RESTAURANTS + ID, expected.getId()))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse();
@@ -114,6 +104,7 @@ public class RestaurantsControllerTest {
 
     @Test
     @DisplayName("Get one restaurant for unauthorized user should return 401.")
+    @WithAnonymousUser
     public void testGetOneByUnauthorized() throws Exception {
         final Restaurant expected = repository.findAll().get(0);
         mockMvc.perform(get(RESTAURANTS + ID, expected.getId()))
@@ -122,11 +113,11 @@ public class RestaurantsControllerTest {
 
     @Test
     @DisplayName("Create restaurant available for admins.")
+    @WithMockUser(roles = {"ADMIN"})
     public void testCreate() throws Exception {
         final Restaurant expected = new Restaurant();
         expected.setName("New restaurant");
         final var response = mockMvc.perform(post(RESTAURANTS)
-                        .with(ADMIN_BASIC_AUTH)
                         .content(JsonUtils.asJson(expected))
                         .contentType(APPLICATION_JSON))
                 .andExpect(status().isCreated())
@@ -145,11 +136,11 @@ public class RestaurantsControllerTest {
 
     @Test
     @DisplayName("Create invalid restaurant.")
+    @WithMockUser(roles = {"ADMIN"})
     public void testCreateInvalid() throws Exception {
         final Restaurant expected = new Restaurant();
         expected.setName("");
         mockMvc.perform(post(RESTAURANTS)
-                        .with(ADMIN_BASIC_AUTH)
                         .content(JsonUtils.asJson(expected))
                         .contentType(APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
@@ -157,11 +148,11 @@ public class RestaurantsControllerTest {
 
     @Test
     @DisplayName("Create restaurant for user is forbidden.")
+    @WithMockUser
     public void testCreateByUser() throws Exception {
         final Restaurant expected = new Restaurant();
         expected.setName("New restaurant");
         mockMvc.perform(post(RESTAURANTS)
-                        .with(USER_BASIC_AUTH)
                         .content(JsonUtils.asJson(expected))
                         .contentType(APPLICATION_JSON))
                 .andExpect(status().isForbidden());
@@ -169,11 +160,11 @@ public class RestaurantsControllerTest {
 
     @Test
     @DisplayName("Update restaurant available for admins.")
+    @WithMockUser(roles = {"ADMIN"})
     public void testUpdate() throws Exception {
         long expectedId = repository.findAll().get(0).getId();
         Restaurant expected = new Restaurant(expectedId, "Updated name");
         final var response = mockMvc.perform(put(RESTAURANTS + ID, expectedId)
-                        .with(ADMIN_BASIC_AUTH)
                         .content(JsonUtils.asJson(expected))
                         .contentType(APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -191,31 +182,31 @@ public class RestaurantsControllerTest {
 
     @Test
     @DisplayName("Update restaurant for user is forbidden.")
+    @WithMockUser
     public void testUpdateByUser() throws Exception {
         long expectedId = repository.findAll().get(0).getId();
         Restaurant expected = new Restaurant(expectedId, "Updated name");
         mockMvc.perform(put(RESTAURANTS + ID, expectedId)
                         .content(JsonUtils.asJson(expected))
-                        .contentType(APPLICATION_JSON)
-                        .with(USER_BASIC_AUTH))
+                        .contentType(APPLICATION_JSON))
                 .andExpect(status().isForbidden());
     }
 
     @Test
     @DisplayName("Delete restaurant available for admins.")
+    @WithMockUser(roles = {"ADMIN"})
     public void testDelete() throws Exception {
         long expectedId = repository.findAll().get(0).getId();
-        mockMvc.perform(delete(RESTAURANTS + ID, expectedId)
-                        .with(ADMIN_BASIC_AUTH))
+        mockMvc.perform(delete(RESTAURANTS + ID, expectedId))
                 .andExpect(status().isNoContent());
     }
 
     @Test
     @DisplayName("Delete restaurant unavailable for user.")
+    @WithMockUser
     public void testDeleteByUser() throws Exception {
         long expectedId = repository.findAll().get(0).getId();
-        mockMvc.perform(delete(RESTAURANTS + ID, expectedId)
-                        .with(USER_BASIC_AUTH))
+        mockMvc.perform(delete(RESTAURANTS + ID, expectedId))
                 .andExpect(status().isForbidden());
     }
 

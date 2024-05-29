@@ -6,13 +6,11 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
-import ru.denisovmaksim.voting.config.SpringConfigForIT;
 import ru.denisovmaksim.voting.dto.UserCreationDTO;
 import ru.denisovmaksim.voting.model.User;
 import ru.denisovmaksim.voting.repository.UserRepository;
@@ -20,25 +18,21 @@ import ru.denisovmaksim.voting.utils.JsonUtils;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.springframework.boot.test.context.SpringBootTest.WebEnvironment.RANDOM_PORT;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static ru.denisovmaksim.voting.utils.TestData.ADMIN;
-import static ru.denisovmaksim.voting.utils.TestData.ADMIN_BASIC_AUTH;
-import static ru.denisovmaksim.voting.utils.TestData.USER;
-import static ru.denisovmaksim.voting.utils.TestData.USER_BASIC_AUTH;
+import static ru.denisovmaksim.voting.utils.UserTestData.ADMIN;
+import static ru.denisovmaksim.voting.utils.UserTestData.ADMIN_BASIC_AUTH;
+import static ru.denisovmaksim.voting.utils.UserTestData.USER;
+import static ru.denisovmaksim.voting.utils.UserTestData.USER_BASIC_AUTH;
 
 @AutoConfigureMockMvc
-@ActiveProfiles(SpringConfigForIT.TEST_PROFILE)
+@ActiveProfiles("test")
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(webEnvironment = RANDOM_PORT, classes = SpringConfigForIT.class)
+@SpringBootTest()
 class UserControllerTest {
-
-    @Value("${base-url}")
-    private String baseUrl;
 
     @Autowired
     private MockMvc mockMvc;
@@ -56,7 +50,7 @@ class UserControllerTest {
     @Test
     @DisplayName("Get profile for authorized user.")
     void getProfileByUser() throws Exception {
-        final var response = mockMvc.perform(get(baseUrl + UserController.PROFILE)
+        final var response = mockMvc.perform(get(UserController.PROFILE)
                         .with(USER_BASIC_AUTH))
                 .andExpect(status().isOk())
                 .andReturn()
@@ -71,7 +65,7 @@ class UserControllerTest {
     @Test
     @DisplayName("Get profile for authorized admin.")
     void getProfileByAdmin() throws Exception {
-        final var response = mockMvc.perform(get(baseUrl + UserController.PROFILE)
+        final var response = mockMvc.perform(get(UserController.PROFILE)
                         .with(ADMIN_BASIC_AUTH))
                 .andExpect(status().isOk())
                 .andReturn()
@@ -87,9 +81,9 @@ class UserControllerTest {
     @DisplayName("Create user should return user.")
     void createUser() throws Exception {
         UserCreationDTO newUser = new UserCreationDTO("new-user@mail.com", "new_user_pass");
-        mockMvc.perform(post(baseUrl + UserController.SIGNUP)
-                .content(JsonUtils.asJson(newUser))
-                .contentType(APPLICATION_JSON))
+        mockMvc.perform(post(UserController.SIGNUP)
+                        .content(JsonUtils.asJson(newUser))
+                        .contentType(APPLICATION_JSON))
                 .andExpect(status().isCreated())
                 .andExpect(header().string("Location", containsString("/profile")))
                 .andReturn()
@@ -101,9 +95,9 @@ class UserControllerTest {
     @Test
     @DisplayName("Create duplicated  user should return bad request.")
     void createDuplicatedUser() throws Exception {
-        mockMvc.perform(post(baseUrl + UserController.SIGNUP)
-                .content(JsonUtils.asJson(new UserCreationDTO(USER.getEmail(), USER.getPassword())))
-                .contentType(APPLICATION_JSON))
+        mockMvc.perform(post(UserController.SIGNUP)
+                        .content(JsonUtils.asJson(new UserCreationDTO(USER.getEmail(), USER.getPassword())))
+                        .contentType(APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
                 .andReturn()
                 .getResponse();
