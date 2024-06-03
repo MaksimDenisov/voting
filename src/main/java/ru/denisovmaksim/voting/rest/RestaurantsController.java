@@ -32,8 +32,9 @@ public class RestaurantsController {
     }
 
     @GetMapping(RESTAURANTS + ID)
-    public Restaurant getOne(@PathVariable("id") Long id) {
-        return service.getById(id);
+    public RestaurantTO getOne(@PathVariable("id") Long id) {
+        Restaurant restaurant = service.getById(id);
+        return new RestaurantTO(restaurant.getId(), restaurant.getName());
     }
 
 }

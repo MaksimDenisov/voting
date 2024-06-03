@@ -28,11 +28,7 @@ import static ru.denisovmaksim.voting.utils.UserTestData.ADMIN_BASIC_AUTH;
 import static ru.denisovmaksim.voting.utils.UserTestData.USER;
 import static ru.denisovmaksim.voting.utils.UserTestData.USER_BASIC_AUTH;
 
-@AutoConfigureMockMvc
-@ActiveProfiles("test")
-@ExtendWith(SpringExtension.class)
-@SpringBootTest()
-class UserControllerTest {
+class UserControllerTest extends AbstractMockMvcTest{
 
     @Autowired
     private MockMvc mockMvc;

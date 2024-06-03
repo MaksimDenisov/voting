@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import ru.denisovmaksim.voting.dto.RestaurantTO;
+import ru.denisovmaksim.voting.dto.RestaurantWithDishesDTO;
 import ru.denisovmaksim.voting.model.Restaurant;
 import ru.denisovmaksim.voting.service.RestaurantsService;
 
@@ -32,16 +33,17 @@ public class AdminRestaurantsController {
     private final RestaurantsService service;
 
     @GetMapping(ADMIN_RESTAURANTS)
-    public List<RestaurantTO> getAll() {
+    public List<RestaurantWithDishesDTO> getAll() {
         return service.getAll()
                 .stream()
-                .map(r -> new RestaurantTO(r.getId(), r.getName()))
+                .map(r -> new RestaurantWithDishesDTO(r.getId(), r.getName()))
                 .collect(Collectors.toList());
     }
 
     @GetMapping(ADMIN_RESTAURANTS + ID)
-    public Restaurant getOne(@PathVariable("id") Long id) {
-        return service.getById(id);
+    public RestaurantWithDishesDTO getOne(@PathVariable("id") Long id) {
+        Restaurant restaurant = service.getById(id);
+        return new RestaurantWithDishesDTO(restaurant.getId(), restaurant.getName());
     }
 
     @PreAuthorize("hasRole('ADMIN')")
