@@ -30,7 +30,7 @@ class AdminRestaurantsControllerTest extends AbstractMockMvcTest {
     private RestaurantsRepository repository;
 
     @Test
-    @DisplayName("Get all restaurants with dishes available for admins.")
+    @DisplayName("Admin: Get all restaurants with dishes.")
     @WithMockUser(roles = {"ADMIN"})
     public void testGetAll() throws Exception {
         final List<RestaurantWithDishesDTO> expected = repository.findAll()
@@ -52,14 +52,14 @@ class AdminRestaurantsControllerTest extends AbstractMockMvcTest {
     }
 
     @Test
-    @DisplayName("Get all restaurants with dishes is forbidden for regular user.")
+    @DisplayName("User : Get all restaurants is forbidden.")
     @WithMockUser
     public void testGetAllByUser() throws Exception {
         checkRequestIsForbidden(get(ADMIN_RESTAURANTS));
     }
 
     @Test
-    @DisplayName("Get one restaurant with dishes available for admin.")
+    @DisplayName("Admin: Get one restaurant with dishes.")
     @WithMockUser(roles = {"ADMIN"})
     public void testGetOne() throws Exception {
         final Restaurant expected = repository.findAll().get(0);
@@ -78,7 +78,7 @@ class AdminRestaurantsControllerTest extends AbstractMockMvcTest {
     }
 
     @Test
-    @DisplayName("Get one restaurant with dishes is forbidden for regular user.")
+    @DisplayName("User: Get one restaurant with dishes is forbidden.")
     @WithMockUser
     public void testGetOneByUnauthorized() throws Exception {
         final Restaurant expected = repository.findAll().get(0);
@@ -87,7 +87,7 @@ class AdminRestaurantsControllerTest extends AbstractMockMvcTest {
     }
 
     @Test
-    @DisplayName("Create restaurant available for admins.")
+    @DisplayName("Admin: Create restaurant.")
     @WithMockUser(roles = {"ADMIN"})
     public void testCreate() throws Exception {
         final Restaurant expected = new Restaurant();
@@ -110,7 +110,7 @@ class AdminRestaurantsControllerTest extends AbstractMockMvcTest {
     }
 
     @Test
-    @DisplayName("Create invalid restaurant.")
+    @DisplayName("Admin: Create invalid restaurant.")
     @WithMockUser(roles = {"ADMIN"})
     public void testCreateInvalid() throws Exception {
         final Restaurant expected = new Restaurant();
@@ -123,7 +123,7 @@ class AdminRestaurantsControllerTest extends AbstractMockMvcTest {
     }
 
     @Test
-    @DisplayName("Update restaurant available for admins.")
+    @DisplayName("Admin: Update restaurant.")
     @WithMockUser(roles = {"ADMIN"})
     public void testUpdate() throws Exception {
         long expectedId = repository.findAll().get(0).getId();
@@ -146,7 +146,7 @@ class AdminRestaurantsControllerTest extends AbstractMockMvcTest {
     }
 
     @Test
-    @DisplayName("Delete restaurant available for admins.")
+    @DisplayName("Admin: Delete restaurant.")
     @WithMockUser(roles = {"ADMIN"})
     public void testDelete() throws Exception {
         long expectedId = repository.findAll().get(0).getId();
@@ -158,7 +158,7 @@ class AdminRestaurantsControllerTest extends AbstractMockMvcTest {
     }
 
     @Test
-    @DisplayName("Create restaurant for user is forbidden.")
+    @DisplayName("User: Create restaurant is forbidden.")
     @WithMockUser
     public void testCreateByUser() throws Exception {
         final Restaurant expected = new Restaurant();
@@ -169,7 +169,7 @@ class AdminRestaurantsControllerTest extends AbstractMockMvcTest {
     }
 
     @Test
-    @DisplayName("Delete restaurant unavailable for user.")
+    @DisplayName("User: Delete restaurant is forbidden.")
     @WithMockUser
     public void testDeleteByUser() throws Exception {
         long expectedId = repository.findAll().get(0).getId();
@@ -178,7 +178,7 @@ class AdminRestaurantsControllerTest extends AbstractMockMvcTest {
     }
 
     @Test
-    @DisplayName("Update restaurant for user is forbidden.")
+    @DisplayName("User: Update restaurant is forbidden.")
     @WithMockUser
     public void testUpdateByUser() throws Exception {
         long expectedId = repository.findAll().get(0).getId();

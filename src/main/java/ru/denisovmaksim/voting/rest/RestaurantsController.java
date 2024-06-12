@@ -18,12 +18,12 @@ import java.util.stream.Collectors;
 @RequestMapping("${base-url}")
 @Slf4j
 public class RestaurantsController {
-    public static final String RESTAURANTS = "/restaurants";
+    public static final String RESTAURANTS_PATH = "/restaurants";
     public static final String ID = "/{id}";
 
     private final RestaurantsService service;
 
-    @GetMapping(RESTAURANTS)
+    @GetMapping(RESTAURANTS_PATH)
     public List<RestaurantTO> getAll() {
         return service.getAll()
                 .stream()
@@ -31,7 +31,7 @@ public class RestaurantsController {
                 .collect(Collectors.toList());
     }
 
-    @GetMapping(RESTAURANTS + ID)
+    @GetMapping(RESTAURANTS_PATH + ID)
     public RestaurantTO getOne(@PathVariable("id") Long id) {
         Restaurant restaurant = service.getById(id);
         return new RestaurantTO(restaurant.getId(), restaurant.getName());

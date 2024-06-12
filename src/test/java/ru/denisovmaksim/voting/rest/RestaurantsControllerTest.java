@@ -17,7 +17,7 @@ import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static ru.denisovmaksim.voting.rest.RestaurantsController.ID;
-import static ru.denisovmaksim.voting.rest.RestaurantsController.RESTAURANTS;
+import static ru.denisovmaksim.voting.rest.RestaurantsController.RESTAURANTS_PATH;
 
 public class RestaurantsControllerTest extends AbstractMockMvcTest {
 
@@ -25,7 +25,7 @@ public class RestaurantsControllerTest extends AbstractMockMvcTest {
     private RestaurantsRepository repository;
 
     @Test
-    @DisplayName("Get all restaurants available for authorized users.")
+    @DisplayName("User: Get all restaurants.")
     @WithMockUser
     public void testGetAll() throws Exception {
         final List<RestaurantTO> expected = repository.findAll()
@@ -33,7 +33,7 @@ public class RestaurantsControllerTest extends AbstractMockMvcTest {
                 .map(restaurant -> new RestaurantTO(restaurant.getId(), restaurant.getName()))
                 .collect(Collectors.toList());
 
-        final var response = perform(get(RESTAURANTS))
+        final var response = perform(get(RESTAURANTS_PATH))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse();
@@ -46,20 +46,20 @@ public class RestaurantsControllerTest extends AbstractMockMvcTest {
     }
 
     @Test
-    @DisplayName("Get all for unauthorized user should return 401.")
+    @DisplayName("Anonymous: Get all is unauthorized.")
     @WithAnonymousUser
     public void testGetAllByUnauthorized() throws Exception {
-        perform(get(RESTAURANTS))
+        perform(get(RESTAURANTS_PATH))
                 .andExpect(status().isUnauthorized());
     }
 
     @Test
-    @DisplayName("Get one restaurant available for authorized users.")
+    @DisplayName("User: Get one restaurant.")
     @WithMockUser
     public void testGetOne() throws Exception {
         final Restaurant expected = repository.findAll().get(0);
         final var response = perform(
-                get(RESTAURANTS + ID, expected.getId()))
+                get(RESTAURANTS_PATH + ID, expected.getId()))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse();
@@ -73,12 +73,12 @@ public class RestaurantsControllerTest extends AbstractMockMvcTest {
     }
 
     @Test
-    @DisplayName("Get one restaurant for unauthorized user should return 401.")
+    @DisplayName("Anonymous: Get one restaurant is unauthorized.")
     @WithAnonymousUser
     public void testGetOneByUnauthorized() throws Exception {
         final Restaurant expected = repository.findAll().get(0);
 
-        perform(get(RESTAURANTS + ID, expected.getId()))
+        perform(get(RESTAURANTS_PATH + ID, expected.getId()))
                 .andExpect(status().isUnauthorized());
     }
 }

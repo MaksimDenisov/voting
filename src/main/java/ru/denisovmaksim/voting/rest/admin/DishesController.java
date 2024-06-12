@@ -16,38 +16,37 @@ import ru.denisovmaksim.voting.dto.DishDTO;
 
 import java.util.List;
 
-import static ru.denisovmaksim.voting.rest.RestaurantsController.RESTAURANTS;
+import static ru.denisovmaksim.voting.rest.RestaurantsController.RESTAURANTS_PATH;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping("${base-url}" + RESTAURANTS)
+@RequestMapping("${base-url}")
 @Slf4j
 public class DishesController {
-
     public static final String RESTAURANT_ID = "/{restaurant-id}";
-    public static final String DISHES = RESTAURANTS + RESTAURANT_ID + "/dishes";
+    public static final String DISHES_PATH = "/admin" + RESTAURANTS_PATH + RESTAURANT_ID + "/dishes";
     public static final String ID = "/{id}";
-    @GetMapping(DISHES)
-    public List<DishDTO> getAllByRestaurantId(@PathVariable("restaurant-id") Long restaurantId) {
+    @GetMapping(DISHES_PATH)
+    public List<DishDTO> getAllByRestaurantId(@PathVariable("{restaurant-id}") Long restaurantId) {
         return null;
     }
 
-    @GetMapping(DISHES + ID)
+    @GetMapping(DISHES_PATH + ID)
     public DishDTO getById(@PathVariable("restaurant-id") Long restaurantId, @PathVariable(ID) Long dishId) {
         return null;
     }
 
-    @PostMapping(DISHES)
+    @PostMapping(DISHES_PATH)
     public DishDTO create(@RequestParam DishDTO dishDTO) {
         return null;
     }
 
-    @PutMapping(DISHES)
+    @PutMapping(DISHES_PATH)
     public DishDTO update(@PathVariable("restaurant-id") Long restaurantId, @RequestParam DishDTO dishDTO) {
         return null;
     }
 
-    @DeleteMapping(DISHES + ID)
+    @DeleteMapping(DISHES_PATH + ID)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable("restaurant-id") Long restaurantId, @PathVariable("id`") Long dishId) {
 
