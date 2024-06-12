@@ -1,7 +1,6 @@
 package ru.denisovmaksim.voting.rest;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +18,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static ru.denisovmaksim.voting.rest.RestaurantsController.ID;
 import static ru.denisovmaksim.voting.rest.RestaurantsController.RESTAURANTS;
-import static ru.denisovmaksim.voting.utils.JsonUtils.fromJson;
 
 public class RestaurantsControllerTest extends AbstractMockMvcTest {
 

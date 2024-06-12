@@ -9,7 +9,6 @@ import ru.denisovmaksim.voting.dto.RestaurantWithDishesDTO;
 import ru.denisovmaksim.voting.model.Restaurant;
 import ru.denisovmaksim.voting.repository.RestaurantsRepository;
 import ru.denisovmaksim.voting.rest.AbstractMockMvcTest;
-import ru.denisovmaksim.voting.utils.JsonUtils;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -23,7 +22,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static ru.denisovmaksim.voting.rest.RestaurantsController.ID;
 import static ru.denisovmaksim.voting.rest.admin.AdminRestaurantsController.ADMIN_RESTAURANTS;
-import static ru.denisovmaksim.voting.utils.JsonUtils.fromJson;
 
 
 class AdminRestaurantsControllerTest extends AbstractMockMvcTest {
@@ -56,9 +54,8 @@ class AdminRestaurantsControllerTest extends AbstractMockMvcTest {
     @Test
     @DisplayName("Get all restaurants with dishes is forbidden for regular user.")
     @WithMockUser
-    public void testGetAllByUnauthorized() throws Exception {
-        perform(get(ADMIN_RESTAURANTS))
-                .andExpect(status().isForbidden());
+    public void testGetAllByUser() throws Exception {
+        checkRequestIsForbidden(get(ADMIN_RESTAURANTS));
     }
 
     @Test
@@ -86,8 +83,7 @@ class AdminRestaurantsControllerTest extends AbstractMockMvcTest {
     public void testGetOneByUnauthorized() throws Exception {
         final Restaurant expected = repository.findAll().get(0);
 
-        perform(get(ADMIN_RESTAURANTS + ID, expected.getId()))
-                .andExpect(status().isForbidden());
+        checkRequestIsForbidden(get(ADMIN_RESTAURANTS + ID, expected.getId()));
     }
 
     @Test
@@ -97,11 +93,12 @@ class AdminRestaurantsControllerTest extends AbstractMockMvcTest {
         final Restaurant expected = new Restaurant();
         expected.setName("New restaurant");
         final var response = perform(post(ADMIN_RESTAURANTS)
-                .content(JsonUtils.asJson(expected))
+                .content(asJson(expected))
                 .contentType(APPLICATION_JSON))
                 .andExpect(status().isCreated())
                 .andReturn()
                 .getResponse();
+
         final Restaurant result = fromJson(response.getContentAsString(), new TypeReference<>() {
         });
         final Restaurant actual = repository.findById(result.getId()).orElse(null);
@@ -120,7 +117,7 @@ class AdminRestaurantsControllerTest extends AbstractMockMvcTest {
         expected.setName("");
 
         perform(post(ADMIN_RESTAURANTS)
-                .content(JsonUtils.asJson(expected))
+                .content(asJson(expected))
                 .contentType(APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
     }
@@ -132,7 +129,7 @@ class AdminRestaurantsControllerTest extends AbstractMockMvcTest {
         long expectedId = repository.findAll().get(0).getId();
         Restaurant expected = new Restaurant(expectedId, "Updated name");
         final var response = perform(put(ADMIN_RESTAURANTS + ID, expectedId)
-                .content(JsonUtils.asJson(expected))
+                .content(asJson(expected))
                 .contentType(APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn()
@@ -147,7 +144,6 @@ class AdminRestaurantsControllerTest extends AbstractMockMvcTest {
                 .ignoringFields("dishes")
                 .isEqualTo(expected);
     }
-
 
     @Test
     @DisplayName("Delete restaurant available for admins.")
@@ -168,10 +164,8 @@ class AdminRestaurantsControllerTest extends AbstractMockMvcTest {
         final Restaurant expected = new Restaurant();
         expected.setName("New restaurant");
 
-        perform(post(ADMIN_RESTAURANTS)
-                .content(JsonUtils.asJson(expected))
-                .contentType(APPLICATION_JSON))
-                .andExpect(status().isForbidden());
+        checkRequestIsForbidden(post(ADMIN_RESTAURANTS)
+                .content(asJson(expected)));
     }
 
     @Test
@@ -180,8 +174,7 @@ class AdminRestaurantsControllerTest extends AbstractMockMvcTest {
     public void testDeleteByUser() throws Exception {
         long expectedId = repository.findAll().get(0).getId();
 
-        perform(delete(ADMIN_RESTAURANTS + ID, expectedId))
-                .andExpect(status().isForbidden());
+        checkRequestIsForbidden(delete(ADMIN_RESTAURANTS + ID, expectedId));
     }
 
     @Test
@@ -191,9 +184,7 @@ class AdminRestaurantsControllerTest extends AbstractMockMvcTest {
         long expectedId = repository.findAll().get(0).getId();
         final Restaurant expected = new Restaurant(expectedId, "Updated name");
 
-        perform(put(ADMIN_RESTAURANTS + ID, expectedId)
-                .content(JsonUtils.asJson(expected))
-                .contentType(APPLICATION_JSON))
-                .andExpect(status().isForbidden());
+        checkRequestIsForbidden(put(ADMIN_RESTAURANTS + ID, expectedId)
+                .content(asJson(expected)));
     }
 }

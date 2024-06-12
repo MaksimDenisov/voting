@@ -6,13 +6,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.test.context.support.WithMockUser;
 import ru.denisovmaksim.voting.model.Dish;
 import ru.denisovmaksim.voting.repository.DishesRepository;
-import ru.denisovmaksim.voting.repository.RestaurantsRepository;
 import ru.denisovmaksim.voting.rest.AbstractMockMvcTest;
 
 import java.util.List;
 
 class DishesControllerTest extends AbstractMockMvcTest {
-
 
     @Autowired
     private DishesRepository dishesRepository;
@@ -33,7 +31,7 @@ class DishesControllerTest extends AbstractMockMvcTest {
     }
 
     @Test
-    @DisplayName("Get all restaurants with dishes available for admins.")
+    @DisplayName("Get one restaurant with dishes available for admins.")
     @WithMockUser(roles = "ADMIN")
     public void getById() {
     }
