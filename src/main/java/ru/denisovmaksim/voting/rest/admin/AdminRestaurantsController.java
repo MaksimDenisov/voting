@@ -36,14 +36,14 @@ public class AdminRestaurantsController {
     public List<RestaurantWithDishesDTO> getAll() {
         return service.getAll()
                 .stream()
-                .map(r -> new RestaurantWithDishesDTO(r.getId(), r.getName()))
+                .map(r -> new RestaurantWithDishesDTO(r.getId(), r.getName(), r.getDishes()))
                 .collect(Collectors.toList());
     }
 
     @GetMapping(ADMIN_RESTAURANTS + ID)
     public RestaurantWithDishesDTO getOne(@PathVariable("id") Long id) {
         Restaurant restaurant = service.getById(id);
-        return new RestaurantWithDishesDTO(restaurant.getId(), restaurant.getName());
+        return new RestaurantWithDishesDTO(restaurant.getId(), restaurant.getName(), restaurant.getDishes());
     }
 
     @PreAuthorize("hasRole('ADMIN')")
