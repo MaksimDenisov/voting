@@ -1,5 +1,12 @@
 package ru.denisovmaksim.voting.rest.admin;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,6 +32,7 @@ import static ru.denisovmaksim.voting.rest.RestaurantsController.RESTAURANTS_PAT
 @AllArgsConstructor
 @RequestMapping("${base-url}")
 @Slf4j
+@Tag(name = "Dishes of restaurant available for admins.")
 public class DishesController {
     public static final String RESTAURANT_ID = "/{restaurant-id}";
     public static final String DISHES_PATH = "/admin" + RESTAURANTS_PATH + RESTAURANT_ID + "/dishes";
@@ -33,25 +41,51 @@ public class DishesController {
     private final DishesService service;
 
     @GetMapping(DISHES_PATH)
-    public List<DishDTO> getAllByRestaurantIdWithRestaurant(@PathVariable("restaurant-id") Long restaurantId) {
+    @Operation(summary = "Getting all dishes by restaurant.")
+    @ApiResponses(@ApiResponse(responseCode = "200", content =
+    @Content(schema = @Schema(implementation = DishDTO.class))
+    ))
+    public List<DishDTO> getAllByRestaurantIdWithRestaurant(
+            @Parameter(name = "restaurant-id", description = "Restaurant id", example = "1")
+            @PathVariable("restaurant-id") Long restaurantId) {
         return service.getAllByRestaurantId(restaurantId);
     }
 
     @GetMapping(DISHES_PATH + ID)
-    public DishDTO getById(@PathVariable("restaurant-id") Long restaurantId,
-                           @PathVariable(ID) Long dishId) {
+    @Operation(summary = "Getting one dish by id and restaurant id.")
+    @ApiResponses(@ApiResponse(responseCode = "200", content =
+    @Content(schema = @Schema(implementation = DishDTO.class))
+    ))
+    public DishDTO getById(
+            @Parameter(name = "restaurant-id", description = "Restaurant id", example = "1")
+            @PathVariable("restaurant-id") Long restaurantId,
+            @Parameter(name = "id", description = "Dish id", example = "1")
+            @PathVariable("id") Long dishId) {
         return service.getById(restaurantId, dishId);
     }
 
     @PostMapping(DISHES_PATH)
     @ResponseStatus(CREATED)
-    public DishDTO create(@PathVariable("restaurant-id") Long restaurantId,
+    @Operation(summary = "Create dish.")
+    @ApiResponses(@ApiResponse(responseCode = "201", content =
+    @Content(schema = @Schema(implementation = DishDTO.class))
+    ))
+    public DishDTO create(
+            @Parameter(name = "restaurant-id", description = "Restaurant id", example = "1")
+            @PathVariable("restaurant-id") Long restaurantId,
                           @Valid @RequestBody DishDTO dishDTO) {
         return service.create(restaurantId, dishDTO);
     }
 
     @PutMapping(DISHES_PATH + ID)
-    public DishDTO update(@PathVariable("restaurant-id") Long restaurantId,
+    @Operation(summary = "Update dish.")
+    @ApiResponses(@ApiResponse(responseCode = "200", content =
+    @Content(schema = @Schema(implementation = DishDTO.class))
+    ))
+    public DishDTO update(
+            @Parameter(name = "restaurant-id", description = "Restaurant id", example = "1")
+            @PathVariable("restaurant-id") Long restaurantId,
+            @Parameter(name = "id", description = "Dish id", example = "1")
                           @PathVariable("id") Long dishId,
                           @Valid @RequestBody DishDTO dishDTO) {
         return service.update(restaurantId, dishId, dishDTO);
@@ -59,6 +93,11 @@ public class DishesController {
 
     @DeleteMapping(DISHES_PATH + ID)
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @Operation(summary = "Delete restaurant by id.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204"),
+            @ApiResponse(responseCode = "404", description = "Not found - The dish was not found")
+    })
     public void delete(@PathVariable("restaurant-id") Long restaurantId, @PathVariable("id") Long dishId) {
         service.delete(restaurantId, dishId);
     }

@@ -5,3 +5,8 @@ server:
       charset: UTF-8
       force: true
 base-url: /api/v1
+
+springdoc:
+  swagger-ui:
+    path: /api-docs
+  default-produces-media-type: application/json

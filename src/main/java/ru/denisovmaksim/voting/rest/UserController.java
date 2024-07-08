@@ -1,5 +1,11 @@
 package ru.denisovmaksim.voting.rest;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +27,7 @@ import java.net.URI;
 
 @RestController
 @RequestMapping("${base-url}")
+@Tag(name = "Profiles")
 public class UserController {
     public static final String PROFILE = "/profile";
     public static final String SIGNUP = "/signup";
@@ -33,6 +40,10 @@ public class UserController {
     }
 
     @GetMapping(PROFILE)
+    @Operation(summary = "Getting my profile.")
+    @ApiResponses(@ApiResponse(responseCode = "200", content =
+    @Content(schema = @Schema(implementation = UserDTO.class))
+    ))
     public UserDTO getProfile() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
@@ -41,6 +52,10 @@ public class UserController {
         return new UserDTO(userDetails.getUsername());
     }
 
+    @Operation(summary = "SignUp.")
+    @ApiResponses(@ApiResponse(responseCode = "201", content =
+    @Content(schema = @Schema(implementation = UserDTO.class))
+    ))
     @PostMapping(SIGNUP)
     public ResponseEntity<UserDTO> create(@RequestBody UserCreationDTO userCreationDTO) {
         User user = service.create(userCreationDTO);
