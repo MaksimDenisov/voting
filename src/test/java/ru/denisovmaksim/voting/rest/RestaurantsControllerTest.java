@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
-import ru.denisovmaksim.voting.dto.RestaurantTO;
+import ru.denisovmaksim.voting.dto.RestaurantDTO;
 import ru.denisovmaksim.voting.model.Restaurant;
 import ru.denisovmaksim.voting.repository.RestaurantsRepository;
 
@@ -28,16 +28,16 @@ public class RestaurantsControllerTest extends AbstractMockMvcTest {
     @DisplayName("User: Get all restaurants.")
     @WithMockUser
     public void testGetAll() throws Exception {
-        final List<RestaurantTO> expected = repository.findAll()
+        final List<RestaurantDTO> expected = repository.findAll()
                 .stream()
-                .map(restaurant -> new RestaurantTO(restaurant.getId(), restaurant.getName()))
+                .map(restaurant -> new RestaurantDTO(restaurant.getId(), restaurant.getName()))
                 .collect(Collectors.toList());
 
         final var response = perform(get(RESTAURANTS_PATH))
                 .andExpect(status().isOk())
                 .andReturn()
                 .getResponse();
-        final List<RestaurantTO> restaurants = fromJson(response.getContentAsString(), new TypeReference<>() {
+        final List<RestaurantDTO> restaurants = fromJson(response.getContentAsString(), new TypeReference<>() {
         });
 
         assertThat(restaurants)
@@ -64,7 +64,7 @@ public class RestaurantsControllerTest extends AbstractMockMvcTest {
                 .andReturn()
                 .getResponse();
 
-        final RestaurantTO actual = fromJson(response.getContentAsString(), new TypeReference<>() {
+        final RestaurantDTO actual = fromJson(response.getContentAsString(), new TypeReference<>() {
         });
 
         assertThat(actual)

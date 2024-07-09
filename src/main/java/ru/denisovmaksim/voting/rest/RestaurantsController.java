@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import ru.denisovmaksim.voting.dto.RestaurantTO;
+import ru.denisovmaksim.voting.dto.RestaurantDTO;
 import ru.denisovmaksim.voting.model.Restaurant;
 import ru.denisovmaksim.voting.service.RestaurantsService;
 
@@ -34,12 +34,12 @@ public class RestaurantsController {
     @GetMapping(RESTAURANTS_PATH)
     @Operation(summary = "Getting all restaurants.")
     @ApiResponses(@ApiResponse(responseCode = "200", content =
-    @Content(schema = @Schema(implementation = RestaurantTO.class))
+    @Content(schema = @Schema(implementation = RestaurantDTO.class))
     ))
-    public List<RestaurantTO> getAll() {
+    public List<RestaurantDTO> getAll() {
         return service.getAll()
                 .stream()
-                .map(r -> new RestaurantTO(r.getId(), r.getName()))
+                .map(r -> new RestaurantDTO(r.getId(), r.getName()))
                 .collect(Collectors.toList());
     }
 
@@ -47,14 +47,14 @@ public class RestaurantsController {
     @Operation(summary = "Get one restaurant.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", content =
-            @Content(schema = @Schema(implementation = RestaurantTO.class))),
+            @Content(schema = @Schema(implementation = RestaurantDTO.class))),
             @ApiResponse(responseCode = "404", description = "Not found - The restaurant was not found")
     }
     )
-    public RestaurantTO getOne(@Parameter(name = "id", description = "Restaurant id", example = "1")
+    public RestaurantDTO getOne(@Parameter(name = "id", description = "Restaurant id", example = "1")
                                @PathVariable("id") Long id) {
         Restaurant restaurant = service.getById(id);
-        return new RestaurantTO(restaurant.getId(), restaurant.getName());
+        return new RestaurantDTO(restaurant.getId(), restaurant.getName());
     }
 
 }

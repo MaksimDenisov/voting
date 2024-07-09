@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import ru.denisovmaksim.voting.dto.RestaurantTO;
+import ru.denisovmaksim.voting.dto.RestaurantDTO;
 import ru.denisovmaksim.voting.dto.RestaurantWithDishesDTO;
 import ru.denisovmaksim.voting.model.Restaurant;
 import ru.denisovmaksim.voting.service.RestaurantsService;
@@ -68,10 +68,11 @@ public class AdminRestaurantsController {
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Create restaurant.")
     @ApiResponses(@ApiResponse(responseCode = "201", content =
-    @Content(schema = @Schema(implementation = Restaurant.class))
+    @Content(schema = @Schema(implementation = RestaurantDTO.class))
     ))
-    public Restaurant create(@RequestBody @Valid RestaurantTO restaurant) {
-        return service.create(restaurant);
+    public RestaurantDTO create(@RequestBody @Valid RestaurantDTO restaurantDTO) {
+        Restaurant restaurant = service.create(restaurantDTO);
+        return new RestaurantDTO(restaurant.getId(), restaurant.getName());
     }
 
 
@@ -80,12 +81,13 @@ public class AdminRestaurantsController {
     @Operation(summary = "Update restaurant.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", content =
-            @Content(schema = @Schema(implementation = Restaurant.class))),
+            @Content(schema = @Schema(implementation = RestaurantDTO.class))),
             @ApiResponse(responseCode = "404", description = "Not found - The restaurant was not found")
     })
-    public Restaurant update(@Parameter(name = "id", description = "Restaurant id", example = "1")
-                             @PathVariable("id") Long id, @Valid @RequestBody RestaurantTO restaurant) {
-        return service.update(id, restaurant);
+    public RestaurantDTO update(@Parameter(name = "id", description = "Restaurant id", example = "1")
+                               @PathVariable("id") Long id, @Valid @RequestBody RestaurantDTO restaurantDTO) {
+        Restaurant restaurant = service.update(id, restaurantDTO);
+        return new RestaurantDTO(restaurant.getId(), restaurant.getName());
     }
 
     @DeleteMapping(ADMIN_RESTAURANTS + ID)

@@ -12,7 +12,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Schema(description = "Restaurant")
-public class RestaurantTO {
+public class RestaurantDTO {
     @Schema(description = "Id of restaurant.")
     private  Long id;
 

@@ -2,7 +2,7 @@ package ru.denisovmaksim.voting.service;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.denisovmaksim.voting.dto.RestaurantTO;
+import ru.denisovmaksim.voting.dto.RestaurantDTO;
 import ru.denisovmaksim.voting.model.Restaurant;
 import ru.denisovmaksim.voting.repository.RestaurantsRepository;
 
@@ -22,20 +22,20 @@ public class RestaurantsService {
                 .orElseThrow();
     }
 
-    public Restaurant create(RestaurantTO restaurantTO) {
-        if (restaurantTO.getId() != null) {
+    public Restaurant create(RestaurantDTO restaurantDTO) {
+        if (restaurantDTO.getId() != null) {
             return null;
         }
-        Restaurant restaurant = new Restaurant(null, restaurantTO.getName());
+        Restaurant restaurant = new Restaurant(null, restaurantDTO.getName());
         return repository.save(restaurant);
     }
 
-    public Restaurant update(Long id, RestaurantTO restaurantTO) {
-        if (!restaurantTO.getId().equals(id)) {
+    public Restaurant update(Long id, RestaurantDTO restaurantDTO) {
+        if (!restaurantDTO.getId().equals(id)) {
             return null;
         }
         Restaurant restaurant = getById(id);
-        restaurant.setName(restaurantTO.getName());
+        restaurant.setName(restaurantDTO.getName());
         return repository.save(restaurant);
     }
 
