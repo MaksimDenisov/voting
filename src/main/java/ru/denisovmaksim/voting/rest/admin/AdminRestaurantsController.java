@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import ru.denisovmaksim.voting.dto.DishDTO;
 import ru.denisovmaksim.voting.dto.RestaurantDTO;
 import ru.denisovmaksim.voting.dto.RestaurantWithDishesDTO;
 import ru.denisovmaksim.voting.model.Restaurant;
@@ -47,7 +48,9 @@ public class AdminRestaurantsController {
     public List<RestaurantWithDishesDTO> getAll() {
         return service.getAll()
                 .stream()
-                .map(r -> new RestaurantWithDishesDTO(r.getId(), r.getName(), r.getDishes()))
+                .map(r -> new RestaurantWithDishesDTO(r.getId(), r.getName(), r.getDishes().stream()
+                        .map(d -> new DishDTO(d.getId(), d.getName(), d.getPrice()))
+                        .collect(Collectors.toList())))
                 .collect(Collectors.toList());
     }
 
@@ -61,7 +64,10 @@ public class AdminRestaurantsController {
     public RestaurantWithDishesDTO getOne(@Parameter(name = "id", description = "Restaurant id", example = "1")
                                           @PathVariable("id") Long id) {
         Restaurant restaurant = service.getById(id);
-        return new RestaurantWithDishesDTO(restaurant.getId(), restaurant.getName(), restaurant.getDishes());
+        return new RestaurantWithDishesDTO(restaurant.getId(), restaurant.getName(), restaurant.getDishes()
+                .stream()
+                .map(d -> new DishDTO(d.getId(), d.getName(), d.getPrice()))
+                .collect(Collectors.toList()));
     }
 
     @PostMapping(ADMIN_RESTAURANTS)
@@ -85,7 +91,7 @@ public class AdminRestaurantsController {
             @ApiResponse(responseCode = "404", description = "Not found - The restaurant was not found")
     })
     public RestaurantDTO update(@Parameter(name = "id", description = "Restaurant id", example = "1")
-                               @PathVariable("id") Long id, @Valid @RequestBody RestaurantDTO restaurantDTO) {
+                                @PathVariable("id") Long id, @Valid @RequestBody RestaurantDTO restaurantDTO) {
         Restaurant restaurant = service.update(id, restaurantDTO);
         return new RestaurantDTO(restaurant.getId(), restaurant.getName());
     }

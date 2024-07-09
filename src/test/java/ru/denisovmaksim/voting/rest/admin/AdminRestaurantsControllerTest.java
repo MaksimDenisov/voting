@@ -5,8 +5,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.test.context.support.WithMockUser;
+import ru.denisovmaksim.voting.dto.DishDTO;
 import ru.denisovmaksim.voting.dto.RestaurantWithDishesDTO;
-import ru.denisovmaksim.voting.model.Dish;
 import ru.denisovmaksim.voting.model.Restaurant;
 import ru.denisovmaksim.voting.repository.DishesRepository;
 import ru.denisovmaksim.voting.repository.RestaurantsRepository;
@@ -25,7 +25,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static ru.denisovmaksim.voting.rest.RestaurantsController.ID;
 import static ru.denisovmaksim.voting.rest.admin.AdminRestaurantsController.ADMIN_RESTAURANTS;
-
 
 class AdminRestaurantsControllerTest extends AbstractMockMvcTest {
 
@@ -58,9 +57,14 @@ class AdminRestaurantsControllerTest extends AbstractMockMvcTest {
         RestaurantWithDishesDTO restaurantWithDishesDTO = restaurants.stream()
                 .filter(r -> r.getId().equals(expected.get(0).getId()))
                 .findFirst().orElseThrow();
-        final List<Dish> expectedDishes = dishesRepository.getAllByRestaurantId(expected.get(0).getId());
+        final List<DishDTO> expectedDishes = dishesRepository.getAllByRestaurantId(expected.get(0).getId())
+                .stream()
+                .map(d -> new DishDTO(d.getId(), d.getName(), d.getPrice()))
+                .collect(Collectors.toList());
 
-        assertThat(restaurantWithDishesDTO.getDishes())
+        assertThat(restaurantWithDishesDTO.getDishes().stream()
+                .map(d -> new DishDTO(d.getId(), d.getName(), d.getPrice()))
+                .collect(Collectors.toList()))
                 .usingRecursiveFieldByFieldElementComparatorIgnoringFields("restaurant")
                 .containsAll(expectedDishes);
     }
@@ -77,7 +81,10 @@ class AdminRestaurantsControllerTest extends AbstractMockMvcTest {
     @WithMockUser(roles = {"ADMIN"})
     public void testGetOne() throws Exception {
         final Restaurant expected = repository.findAll().get(0);
-        final List<Dish> expectedDishes = dishesRepository.getAllByRestaurantId(expected.getId());
+        final List<DishDTO> expectedDishes = dishesRepository.getAllByRestaurantId(expected.getId())
+                .stream()
+                .map(d -> new DishDTO(d.getId(), d.getName(), d.getPrice()))
+                .collect(Collectors.toList());
 
         final var response = perform(
                 get(ADMIN_RESTAURANTS + ID, expected.getId()))
@@ -93,7 +100,10 @@ class AdminRestaurantsControllerTest extends AbstractMockMvcTest {
                 .usingRecursiveComparison()
                 .ignoringFields("dishes")
                 .isEqualTo(expected);
-        assertThat(actual.getDishes())
+
+        assertThat(actual.getDishes().stream()
+                .map(d -> new DishDTO(d.getId(), d.getName(), d.getPrice()))
+                .collect(Collectors.toList()))
                 .usingRecursiveFieldByFieldElementComparatorIgnoringFields("restaurant")
                 .containsAll(expectedDishes);
     }

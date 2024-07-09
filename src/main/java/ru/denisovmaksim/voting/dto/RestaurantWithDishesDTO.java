@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import ru.denisovmaksim.voting.model.Dish;
 
 import java.util.List;
 
@@ -23,7 +22,7 @@ public class RestaurantWithDishesDTO {
     private String name;
 
     @Schema(description = "Dishes of restaurant.")
-    private List<Dish> dishes;
+    private List<DishDTO> dishes;
 
     public RestaurantWithDishesDTO(Long id, String name) {
         this.id = id;
