@@ -6,12 +6,17 @@
 
 [![Test Coverage](https://api.codeclimate.com/v1/badges/14ef72a81d1e28d04ee3/test_coverage)](https://codeclimate.com/github/MaksimDenisov/voting/test_coverage)
 
-### Swagger
+#### Swagger
 ```
 /api-docs
 ```
 
-###  Checkstyle
+#### H2 Console available by admin
+```
+/h2console
+```
+
+####  Checkstyle
 ```sh
 make checkstyle
 ```
