@@ -20,8 +20,12 @@ import ru.denisovmaksim.voting.service.UserService;
 @EnableWebSecurity
 @EnableMethodSecurity()
 public class SecurityConfig {
+    private static final String[] SWAGGER_PUBLIC =
+            {"/api-docs", "/v3/api-docs/**", "/swagger-ui.html", "/swagger-ui/**"};
+
     private final UserService userService;
     private final String baseUrl;
+
     public SecurityConfig(@Value("${base-url}") final String baseUrl, UserService userService) {
         this.baseUrl = baseUrl;
         this.userService = userService;
@@ -49,6 +53,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(request -> request
+                        .requestMatchers(SWAGGER_PUBLIC).permitAll()
                         .requestMatchers(baseUrl + "/signup").permitAll()
                         .requestMatchers(baseUrl + "/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated())
