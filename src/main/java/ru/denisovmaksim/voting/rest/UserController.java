@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import ru.denisovmaksim.voting.dto.UserCreationDTO;
 import ru.denisovmaksim.voting.dto.UserDTO;
+import ru.denisovmaksim.voting.mapper.UserMapper;
 import ru.denisovmaksim.voting.model.User;
 import ru.denisovmaksim.voting.service.UserService;
 
@@ -32,11 +33,12 @@ public class UserController {
     public static final String PROFILE = "/profile";
     public static final String SIGNUP = "/signup";
     private final Logger logger = LoggerFactory.getLogger(UserController.class);
-
     private final UserService service;
+    private final UserMapper mapper;
 
-    public UserController(UserService service) {
+    public UserController(UserService service, UserMapper mapper) {
         this.service = service;
+        this.mapper = mapper;
     }
 
     @GetMapping(PROFILE)
@@ -49,7 +51,7 @@ public class UserController {
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         logger.info("Get profile: User {} has authorities: {}",
                 userDetails.getUsername(), userDetails.getAuthorities());
-        return new UserDTO(userDetails.getUsername());
+        return mapper.toUserDTO(userDetails);
     }
 
     @Operation(summary = "SignUp.")
@@ -64,6 +66,6 @@ public class UserController {
                 .path(PROFILE)
                 .build().toUri();
         return ResponseEntity.created(location)
-                .body(new UserDTO(user.getEmail()));
+                .body(mapper.toUserDTO(user));
     }
 }

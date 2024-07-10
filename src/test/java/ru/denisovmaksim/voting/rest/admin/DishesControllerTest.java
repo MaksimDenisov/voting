@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import ru.denisovmaksim.voting.dto.DishDTO;
+import ru.denisovmaksim.voting.mapper.DishMapper;
 import ru.denisovmaksim.voting.model.Dish;
 import ru.denisovmaksim.voting.repository.DishesRepository;
 import ru.denisovmaksim.voting.repository.RestaurantsRepository;
@@ -26,14 +27,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static ru.denisovmaksim.voting.rest.admin.DishesController.DISHES_PATH;
 import static ru.denisovmaksim.voting.rest.admin.DishesController.ID;
 
+
 class DishesControllerTest extends AbstractMockMvcTest {
     private static final Long MEAT_RESTAURANT_ID = 1L;
 
     @Autowired
     private DishesRepository dishesRepository;
-
     @Autowired
     private RestaurantsRepository restaurantsRepository;
+    @Autowired
+    private DishMapper dishMapper;
 
     @Test
     @DisplayName("Admin: Get dishes from one restaurant.")
@@ -41,7 +44,7 @@ class DishesControllerTest extends AbstractMockMvcTest {
     public void getById() throws Exception {
         final List<DishDTO> expected = dishesRepository.getAllByRestaurantId(MEAT_RESTAURANT_ID)
                 .stream()
-                .map(dish -> new DishDTO(dish.getId(), dish.getName(), dish.getPrice()))
+                .map(dishMapper::toDTO)
                 .collect(Collectors.toList());
 
         final var response = perform(get(DISHES_PATH, MEAT_RESTAURANT_ID))

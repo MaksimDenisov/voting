@@ -7,11 +7,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.test.context.support.WithMockUser;
 import ru.denisovmaksim.voting.dto.DishDTO;
 import ru.denisovmaksim.voting.dto.RestaurantWithDishesDTO;
+import ru.denisovmaksim.voting.mapper.DishMapper;
 import ru.denisovmaksim.voting.model.Restaurant;
 import ru.denisovmaksim.voting.repository.DishesRepository;
 import ru.denisovmaksim.voting.repository.RestaurantsRepository;
 import ru.denisovmaksim.voting.rest.AbstractMockMvcTest;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,7 +34,8 @@ class AdminRestaurantsControllerTest extends AbstractMockMvcTest {
     private RestaurantsRepository repository;
     @Autowired
     private DishesRepository dishesRepository;
-
+    @Autowired
+    private DishMapper dishMapper;
     @Test
     @DisplayName("Admin: Get all restaurants with dishes.")
     @WithMockUser(roles = {"ADMIN"})
@@ -59,12 +62,10 @@ class AdminRestaurantsControllerTest extends AbstractMockMvcTest {
                 .findFirst().orElseThrow();
         final List<DishDTO> expectedDishes = dishesRepository.getAllByRestaurantId(expected.get(0).getId())
                 .stream()
-                .map(d -> new DishDTO(d.getId(), d.getName(), d.getPrice()))
+                .map(dishMapper::toDTO)
                 .collect(Collectors.toList());
 
-        assertThat(restaurantWithDishesDTO.getDishes().stream()
-                .map(d -> new DishDTO(d.getId(), d.getName(), d.getPrice()))
-                .collect(Collectors.toList()))
+        assertThat(new ArrayList<>(restaurantWithDishesDTO.getDishes()))
                 .usingRecursiveFieldByFieldElementComparatorIgnoringFields("restaurant")
                 .containsAll(expectedDishes);
     }
@@ -83,7 +84,7 @@ class AdminRestaurantsControllerTest extends AbstractMockMvcTest {
         final Restaurant expected = repository.findAll().get(0);
         final List<DishDTO> expectedDishes = dishesRepository.getAllByRestaurantId(expected.getId())
                 .stream()
-                .map(d -> new DishDTO(d.getId(), d.getName(), d.getPrice()))
+                .map(dishMapper::toDTO)
                 .collect(Collectors.toList());
 
         final var response = perform(
@@ -101,9 +102,7 @@ class AdminRestaurantsControllerTest extends AbstractMockMvcTest {
                 .ignoringFields("dishes")
                 .isEqualTo(expected);
 
-        assertThat(actual.getDishes().stream()
-                .map(d -> new DishDTO(d.getId(), d.getName(), d.getPrice()))
-                .collect(Collectors.toList()))
+        assertThat(new ArrayList<>(actual.getDishes()))
                 .usingRecursiveFieldByFieldElementComparatorIgnoringFields("restaurant")
                 .containsAll(expectedDishes);
     }

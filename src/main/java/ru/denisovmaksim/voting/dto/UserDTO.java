@@ -1,15 +1,11 @@
 package ru.denisovmaksim.voting.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.Data;
 
-@NoArgsConstructor
-@AllArgsConstructor
-@Getter
-@Setter
+
+
+@Data
 @Schema(description = "User")
 public class UserDTO {
     @Schema(description = "User's email")

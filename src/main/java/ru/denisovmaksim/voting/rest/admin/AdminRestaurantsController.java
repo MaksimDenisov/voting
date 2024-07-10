@@ -20,10 +20,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import ru.denisovmaksim.voting.dto.DishDTO;
 import ru.denisovmaksim.voting.dto.RestaurantDTO;
 import ru.denisovmaksim.voting.dto.RestaurantWithDishesDTO;
-import ru.denisovmaksim.voting.model.Restaurant;
+import ru.denisovmaksim.voting.mapper.RestaurantsMapper;
 import ru.denisovmaksim.voting.service.RestaurantsService;
 
 import java.util.List;
@@ -40,6 +39,8 @@ public class AdminRestaurantsController {
 
     private final RestaurantsService service;
 
+    private final RestaurantsMapper restaurantsMapper;
+
     @GetMapping(ADMIN_RESTAURANTS)
     @Operation(summary = "Getting all restaurants with all their dishes.")
     @ApiResponses(@ApiResponse(responseCode = "200", content =
@@ -48,9 +49,7 @@ public class AdminRestaurantsController {
     public List<RestaurantWithDishesDTO> getAll() {
         return service.getAll()
                 .stream()
-                .map(r -> new RestaurantWithDishesDTO(r.getId(), r.getName(), r.getDishes().stream()
-                        .map(d -> new DishDTO(d.getId(), d.getName(), d.getPrice()))
-                        .collect(Collectors.toList())))
+                .map(restaurantsMapper::toDTOWithDishes)
                 .collect(Collectors.toList());
     }
 
@@ -63,11 +62,7 @@ public class AdminRestaurantsController {
     })
     public RestaurantWithDishesDTO getOne(@Parameter(name = "id", description = "Restaurant id", example = "1")
                                           @PathVariable("id") Long id) {
-        Restaurant restaurant = service.getById(id);
-        return new RestaurantWithDishesDTO(restaurant.getId(), restaurant.getName(), restaurant.getDishes()
-                .stream()
-                .map(d -> new DishDTO(d.getId(), d.getName(), d.getPrice()))
-                .collect(Collectors.toList()));
+        return restaurantsMapper.toDTOWithDishes(service.getById(id));
     }
 
     @PostMapping(ADMIN_RESTAURANTS)
@@ -77,8 +72,7 @@ public class AdminRestaurantsController {
     @Content(schema = @Schema(implementation = RestaurantDTO.class))
     ))
     public RestaurantDTO create(@RequestBody @Valid RestaurantDTO restaurantDTO) {
-        Restaurant restaurant = service.create(restaurantDTO);
-        return new RestaurantDTO(restaurant.getId(), restaurant.getName());
+        return restaurantsMapper.toDTO(service.create(restaurantDTO));
     }
 
 
@@ -92,8 +86,7 @@ public class AdminRestaurantsController {
     })
     public RestaurantDTO update(@Parameter(name = "id", description = "Restaurant id", example = "1")
                                 @PathVariable("id") Long id, @Valid @RequestBody RestaurantDTO restaurantDTO) {
-        Restaurant restaurant = service.update(id, restaurantDTO);
-        return new RestaurantDTO(restaurant.getId(), restaurant.getName());
+        return restaurantsMapper.toDTO(service.update(id, restaurantDTO));
     }
 
     @DeleteMapping(ADMIN_RESTAURANTS + ID)

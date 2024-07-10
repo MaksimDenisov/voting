@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.security.test.context.support.WithMockUser;
 import ru.denisovmaksim.voting.dto.RestaurantDTO;
+import ru.denisovmaksim.voting.mapper.RestaurantsMapper;
 import ru.denisovmaksim.voting.model.Restaurant;
 import ru.denisovmaksim.voting.repository.RestaurantsRepository;
 
@@ -24,13 +25,16 @@ public class RestaurantsControllerTest extends AbstractMockMvcTest {
     @Autowired
     private RestaurantsRepository repository;
 
+    @Autowired
+    private RestaurantsMapper mapper;
+
     @Test
     @DisplayName("User: Get all restaurants.")
     @WithMockUser
     public void testGetAll() throws Exception {
         final List<RestaurantDTO> expected = repository.findAll()
                 .stream()
-                .map(restaurant -> new RestaurantDTO(restaurant.getId(), restaurant.getName()))
+                .map(mapper::toDTO)
                 .collect(Collectors.toList());
 
         final var response = perform(get(RESTAURANTS_PATH))

@@ -3,8 +3,8 @@ package ru.denisovmaksim.voting.service;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.denisovmaksim.voting.dto.DishDTO;
+import ru.denisovmaksim.voting.mapper.DishMapper;
 import ru.denisovmaksim.voting.model.Dish;
-import ru.denisovmaksim.voting.model.Restaurant;
 import ru.denisovmaksim.voting.repository.DishesRepository;
 import ru.denisovmaksim.voting.repository.RestaurantsRepository;
 
@@ -16,27 +16,26 @@ import java.util.stream.Collectors;
 public class DishesService {
     private final DishesRepository dishesRepository;
     private final RestaurantsRepository restaurantsRepository;
+    private final DishMapper mapper;
 
     public List<DishDTO> getAllByRestaurantId(Long restaurantId) {
         return dishesRepository.getAllByRestaurantId(restaurantId)
                 .stream()
-                .map(dish -> new DishDTO(dish.getId(), dish.getName(), dish.getPrice()))
+                .map(mapper::toDTO)
                 .collect(Collectors.toList());
     }
 
     public DishDTO getById(Long restaurantId, Long dishId) {
-        Dish dish = dishesRepository.getById(restaurantId, dishId);
-        return new DishDTO(dish.getId(), dish.getName(), dish.getPrice());
+        return mapper.toDTO(dishesRepository.getById(restaurantId, dishId));
     }
 
     public DishDTO create(Long restaurantId, DishDTO dishDTO) {
         if (dishDTO.getId() != null) {
             return null;
         }
-        Restaurant restaurant = restaurantsRepository.getReferenceById(restaurantId);
-        Dish dish = new Dish(null, dishDTO.getName(), dishDTO.getPrice(), restaurant);
-        Dish result = dishesRepository.save(dish);
-        return new DishDTO(result.getId(), result.getName(), result.getPrice());
+        Dish saved = mapper.fromDTO(dishDTO);
+        saved.setRestaurant(restaurantsRepository.getReferenceById(restaurantId));
+        return mapper.toDTO(dishesRepository.save(saved));
     }
 
     public DishDTO update(Long restaurantId, Long dishId, DishDTO dishDTO) {
@@ -46,8 +45,7 @@ public class DishesService {
         }
         dish.setName(dishDTO.getName());
         dish.setPrice(dishDTO.getPrice());
-        Dish result = dishesRepository.save(dish);
-        return new DishDTO(result.getId(), result.getName(), result.getPrice());
+        return mapper.toDTO(dishesRepository.save(dish));
     }
 
     public void delete(Long restaurantId, Long dishId) {

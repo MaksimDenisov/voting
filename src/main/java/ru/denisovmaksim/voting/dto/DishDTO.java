@@ -2,14 +2,10 @@ package ru.denisovmaksim.voting.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.Data;
 
+@Data
 @AllArgsConstructor
-@NoArgsConstructor
-@Getter
-@Setter
 @Schema(description = "Dish")
 public class DishDTO {
     @Schema(description = "Id of dish.")
