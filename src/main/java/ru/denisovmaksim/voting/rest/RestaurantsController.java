@@ -14,11 +14,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.denisovmaksim.voting.dto.RestaurantDTO;
-import ru.denisovmaksim.voting.mapper.RestaurantsMapper;
 import ru.denisovmaksim.voting.service.RestaurantsService;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @AllArgsConstructor
@@ -31,18 +29,13 @@ public class RestaurantsController {
 
     private final RestaurantsService service;
 
-    private final RestaurantsMapper mapper;
-
     @GetMapping(RESTAURANTS_PATH)
     @Operation(summary = "Getting all restaurants.")
     @ApiResponses(@ApiResponse(responseCode = "200", content =
     @Content(schema = @Schema(implementation = RestaurantDTO.class))
     ))
     public List<RestaurantDTO> getAll() {
-        return service.getAll()
-                .stream()
-                .map(mapper::toDTO)
-                .collect(Collectors.toList());
+        return service.getAll();
     }
 
     @GetMapping(RESTAURANTS_PATH + ID)
@@ -55,7 +48,7 @@ public class RestaurantsController {
     )
     public RestaurantDTO getOne(@Parameter(name = "id", description = "Restaurant id", example = "1")
                                @PathVariable("id") Long id) {
-        return mapper.toDTO(service.getById(id));
+        return service.getById(id);
     }
 
 }
